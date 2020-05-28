@@ -1,4 +1,6 @@
 const path = require('path'); //引入path模块
+const apiMocker = require('webpack-api-mocker')
+
 function resolve(dir) {
   return path.join(__dirname, dir) //path.join(__dirname)设置绝对路径
 }
@@ -12,5 +14,20 @@ module.exports = {
       .set('assets', resolve('./src/assets'))
     //set第一个参数：设置的别名，第二个参数：设置的路径
 
-  }
+    }
+      ,
+   devServer: {
+     before(app) {
+       // 注意，此处引用的是自定义的接口文件
+       apiMocker(app, path.resolve('./mocker/index.js'), {
+         proxy: {
+           '/repos/*': 'https://api.github.com/',
+         },
+         changeHost: true,
+       })
+     }
+   }
 }
+
+
+
